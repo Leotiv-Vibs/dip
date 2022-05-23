@@ -17,16 +17,18 @@ def vosk_(str_: str):
 
 def kaldi_():
     a = stt.va_listen()
-    thread_vosk = Thread(target=vosk_, name='thread_vosk',
-                         args=(a[1:],))
-    thread_vosk.start()
+    # thread_vosk = Thread(target=vosk_, name='thread_vosk',
+    #                      args=(a[1:],))
+    # thread_vosk.start()
     print(a)
+    end_request = True
 
 def run():
     cap = cv2.VideoCapture(0)
     count = 0
     # thread_vosk = Thread(target=vosk_, name='thread_vosk', args=(str_))
     # # thread_vosk.start()
+    end_request = True
     with mp_hands.Hands(
             model_complexity=0,
             min_detection_confidence=0.5,
@@ -45,18 +47,15 @@ def run():
                 x_px, y_px = image.shape[1] * x, image.shape[0] * y
                 if 500 < x_px < 600 and 340 < y_px < 440:
                     count += 1
-                    if count >= 30:
+                    if count >= 10 and end_request:
                         print('aer')
+                        end_request = False
                         # tts.va_speak('Ты нажал на кнопку хозяин')
                         count = 0
+
                         thread_vosk = Thread(target=vosk_, name='thread_vosk',
-                                             args=('Кнопка нажата. Теперь я слушаю ваши команды.',))
+                                             args=('Слушаю хозяин',))
                         thread_vosk.start()
-
-
-
-
-
                 else:
                     count = 0
             if results.multi_hand_landmarks:

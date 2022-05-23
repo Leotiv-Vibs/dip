@@ -23,6 +23,7 @@ def va_listen(callback=1):
                            channels=1, callback=q_callback):
 
         rec = vosk.KaldiRecognizer(model, samplerate)
+        break_ = False
         while True:
             data = q.get()
             print('говори')
@@ -33,7 +34,11 @@ def va_listen(callback=1):
                 f, s = [m.start() for m in re.finditer('\"', a)][-2:][0], \
                        [m.start() for m in re.finditer('\"', a)][-2:][1]
                 str_ret = a[f:s]
+                break_ = True
                 return str_ret
+            if break_:
+                print('fd')
+                break
             # else:
             #    print(rec.PartialResult())
 

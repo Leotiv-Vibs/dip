@@ -1,3 +1,6 @@
+import datetime
+import pickle
+
 import torch
 import sounddevice as sd
 import time
@@ -7,12 +10,11 @@ from tqdm import tqdm
 
 language = 'ru'
 model_id = 'ru_v3'
-sample_rate = 24000 # 48000
+sample_rate = 48000  # 48000
 speaker = 'baya' # aidar, baya, kseniya, xenia, random
 put_accent = True
 put_yo = True
 device = torch.device('cpu') # cpu или gpu
-text = "Хауди Хо, друзья!!!"
 
 model, _ = torch.hub.load(repo_or_dir='snakers4/silero-models',
                           model='silero_tts',
@@ -33,6 +35,23 @@ def va_speak(what: str):
     time.sleep((len(audio) / sample_rate) + 0.5)
     sd.stop()
 
+def save_object(obj, filename):
+    with open(filename, 'wb') as outp:  # Overwrites any existing file.
+        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
+
+def load_object(path_data):
+    with open(path_data, 'rb') as inp:
+        object_pkl = pickle.load(inp)
+    return object_pkl
+
+
+hello_object = load_object(r'C:\Users\79614\PycharmProjects\diplom_\speach_comand\hello.pkl')
+sd.play(hello_object, sample_rate * 1.05)
+
+start = datetime.datetime.now()
+# va_speak('Приветствую хозяин. Я готова слушать Ваши команды.')
+time_ = datetime.datetime.now() - start
+a = 0
 # str_ = ''
 # with open("ya_idu_k_reke.txt", "r", encoding='utf8') as fh:
 #     a = fh.readlines()
