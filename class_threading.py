@@ -50,6 +50,12 @@ class ClassThreading:
         self.hello_object = self.load_object(self.path_to_hello)
         # self.what = self.hello_object
 
+        # kaldi
+        self.stt_samplerate = 16000
+        self.stt_device = 1
+        self.stt_model = vosk.Model(r"C:\Users\79614\PycharmProjects\diplom_\speech_asis\model")
+        self.q = queue.Queue()
+
         # threads
         self.count_vosk = 0
         self.end_request = True
@@ -68,8 +74,8 @@ class ClassThreading:
         self.thread_vosk_hello.start()
         self.threads.append(self.thread_vosk_hello)
 
-    def start_kaldi(self,):
-        self.thread_kaldi_ = Thread(target=kaldi_, name='thread_kaldi', args=())
+    def start_kaldi(self, ):
+        self.thread_kaldi_ = Thread(target=self.kaldi_, name='thread_kaldi', args=())
         self.thread_kaldi_.start()
 
     def start_camera_pipe(self):
@@ -121,36 +127,35 @@ class ClassThreading:
                 break
         self.cap.release()
 
-    @staticmethod
-    def q_callback(indata, frames, time, status):
+    def q_callback(self, indata, frames, time, status):
         if status:
             print(status, file=sys.stderr)
-        q.put(bytes(indata))
+        self.q.put(bytes(indata))
 
-    def kaldi_(self):
-        def va_listen(callback=1):
-            with sd.RawInputStream(samplerate=samplerate, blocksize=8000, device=device, dtype='int16',
-                                   channels=1, callback=q_callback):
+    def kaldi_(self, callback=1):
 
-                rec = vosk.KaldiRecognizer(model, samplerate)
-                break_ = False
-                while True:
-                    data = q.get()
-                    print('говори')
-                    if rec.AcceptWaveform(data):
-                        # callback(json.loads(rec.Result())["text"])
-                        # print(rec.Result())
-                        a = rec.Result()
-                        f, s = [m.start() for m in re.finditer('\"', a)][-2:][0], \
-                               [m.start() for m in re.finditer('\"', a)][-2:][1]
-                        str_ret = a[f:s]
-                        break_ = True
-                        return str_ret
-                    if break_:
-                        print('fd')
-                        break
-                    # else:
-                    #    print(rec.PartialResult())
+        with sd.RawInputStream(samplerate=self.stt_samplerate, blocksize=8000, device=self.stt_device, dtype='int16',
+                               channels=1, callback=self.q_callback):
+
+            rec = vosk.KaldiRecognizer(self.stt_model, self.stt_samplerate)
+            break_ = False
+            while True:
+                data = self.q.get()
+                print('говори')
+                if rec.AcceptWaveform(data):
+                    # callback(json.loads(rec.Result())["text"])
+                    # print(rec.Result())
+                    a = rec.Result()
+                    f, s = [m.start() for m in re.finditer('\"', a)][-2:][0], \
+                           [m.start() for m in re.finditer('\"', a)][-2:][1]
+                    str_ret = a[f:s]
+                    break_ = True
+                    return str_ret
+                if break_:
+                    print('fd')
+                    break
+                # else:
+                #    print(rec.PartialResult())
 
     def vosk_(self, what):
         while self.cap.isOpened():
@@ -179,9 +184,11 @@ class ClassThreading:
         with open(path_to_save, 'wb') as outp:  # Overwrites any existing file.
             pickle.dump(obj_save, outp, pickle.HIGHEST_PROTOCOL)
 
+
 if __name__ == '__main__':
     test = ClassThreading(speaker_name='baya')
-    test.start_camera_pipe()
+    a = test.start_kaldi()
+    # test.start_camera_pipe()
 
     # test.start_vosk(test.hello_object)
 
