@@ -34,24 +34,24 @@ def va_speak(what: str):
     sd.play(audio, sample_rate * 1.05)
     time.sleep((len(audio) / sample_rate) + 0.5)
     sd.stop()
-
-def save_object(obj, filename):
-    with open(filename, 'wb') as outp:  # Overwrites any existing file.
-        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
-
-def load_object(path_data):
-    with open(path_data, 'rb') as inp:
-        object_pkl = pickle.load(inp)
-    return object_pkl
-
-
-hello_object = load_object(r'C:\Users\79614\PycharmProjects\diplom_\speach_comand\hello.pkl')
-sd.play(hello_object, sample_rate * 1.05)
-
-start = datetime.datetime.now()
-# va_speak('Приветствую хозяин. Я готова слушать Ваши команды.')
-time_ = datetime.datetime.now() - start
-a = 0
+#
+# def save_object(obj, filename):
+#     with open(filename, 'wb') as outp:  # Overwrites any existing file.
+#         pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
+#
+# def load_object(path_data):
+#     with open(path_data, 'rb') as inp:
+#         object_pkl = pickle.load(inp)
+#     return object_pkl
+#
+#
+# hello_object = load_object(r'C:\Users\79614\PycharmProjects\diplom_\speach_comand\hello.pkl')
+# sd.play(hello_object, sample_rate * 1.05)
+#
+# start = datetime.datetime.now()
+# # va_speak('Приветствую хозяин. Я готова слушать Ваши команды.')
+# time_ = datetime.datetime.now() - start
+# a = 0
 # str_ = ''
 # with open("ya_idu_k_reke.txt", "r", encoding='utf8') as fh:
 #     a = fh.readlines()
